@@ -16,7 +16,7 @@ import path from "path"
 dotenv.config()
 
 
-const __dirname = path.resolve()
+// const __dirname = path.resolve()
 const port = process.env.PORT || 4000
 const app = express();
 const httpServer = http.createServer(app);
@@ -60,9 +60,13 @@ const server = new ApolloServer({
     ]
 })
 
-app.use(express.static("../merng-client/build"))
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../merng-client/build/index.html"))
+// app.use(express.static("../merng-client/build"))
+// app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "../merng-client/build/index.html"))
+// })
+
+app.get("/",(req, res)=>{
+    res.send("It's work")
 })
 
 await server.start();
