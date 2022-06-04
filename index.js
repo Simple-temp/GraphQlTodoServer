@@ -13,15 +13,14 @@ import dotenv from "dotenv";
 import express from 'express';
 import http from 'http';
 import path from "path"
-const __dirname = path.resolve()
+dotenv.config()
 
+
+const __dirname = path.resolve()
 const port = process.env.PORT || 4000
 const app = express();
 const httpServer = http.createServer(app);
 
-if (process.env.NODE_ENV !== "production") {
-    dotenv.config()
-}
 
 mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true, useUnifiedTopology: true
@@ -61,14 +60,10 @@ const server = new ApolloServer({
     ]
 })
 
-if (process.env.NODE_ENV == "production") {
-
-    app.use(express.static("../merng-client/build"))
-    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "../merng-client/build/index.html"))
-    })
-
-}
+app.use(express.static("../merng-client/build"))
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../merng-client/build/index.html"))
+})
 
 await server.start();
 server.applyMiddleware({
