@@ -1,5 +1,5 @@
 import { ApolloServer } from "apollo-server-express";
-import { 
+import {
     ApolloServerPluginDrainHttpServer,
     ApolloServerPluginLandingPageGraphQLPlayground,
     ApolloServerPluginLandingPageDisabled
@@ -12,24 +12,25 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import express from 'express';
 import http from 'http';
+import path from "path"
 
 const port = process.env.PORT || 4000
 const app = express();
 const httpServer = http.createServer(app);
 
-if(process.env.NODE_ENV !== "production"){
+if (process.env.NODE_ENV !== "production") {
     dotenv.config()
 }
 
 mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true, useUnifiedTopology: true
 })
-.then(()=>{
-    console.log("db connected")
-})
-.catch((err)=>{
-    console.log(err)
-})
+    .then(() => {
+        console.log("db connected")
+    })
+    .catch((err) => {
+        console.log(err)
+    })
 
 //mongoose models
 import "./models/UserModel.js"
@@ -37,38 +38,41 @@ import "./models/PostModel.js"
 //graphql resolvers
 import resolvers from "./resolvers.js";
 
-const context = ({req}) =>{
+const context = ({ req }) => {
 
     const { authorization } = req.headers
-    if(authorization){
-        const  {userId} = jwt.verify(authorization, process.env.JWT_TOKEN)
-        return {userId}
+    if (authorization) {
+        const { userId } = jwt.verify(authorization, process.env.JWT_TOKEN)
+        return { userId }
     }
 
 }
 
-const server = new ApolloServer ({
+const server = new ApolloServer({
     typeDefs,
     resolvers,
     context,
-    plugins : [
+    plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         process.env.NODE_ENV !== "production" ?
-        ApolloServerPluginLandingPageGraphQLPlayground() :
-        ApolloServerPluginLandingPageDisabled
+            ApolloServerPluginLandingPageGraphQLPlayground() :
+            ApolloServerPluginLandingPageDisabled
     ]
 })
 
-app.get("/",(req, res)=>{
-    res.send("apollo express server ready with express")
-})
+if (process.env.NODE_ENV == "production") {
+    app.use(express.static("../merng-client/build"))
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "merng-client", "build", "index.html"))
+    })
+}
 
 await server.start();
-server.applyMiddleware({ 
+server.applyMiddleware({
     app,
-    path : "/graphql"
+    path: "/graphql"
 });
 
-httpServer.listen({ port }, ()=>{
+httpServer.listen({ port }, () => {
     console.log(`🚀  Server ready at ${server.graphqlPath}`);
 })
