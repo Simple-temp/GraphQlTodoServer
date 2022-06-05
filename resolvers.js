@@ -12,7 +12,8 @@ const resolvers = {
         user: async (_, { _id }) => await User.findOne({ _id }),//users.find ( (x) => x._id == _id ),
         posts: async () => await Post.find({}).populate("by", "_id name"),
         post: async (_, { by }) => await Post.find({ by }),// posts.filter ( (x) => x.by == by )
-        allPost: async () => await Post.find(),
+        postById: async(_, { _id }) => await Post.findOne({ _id }),//postById.find ( (x) => x._id == _id ),
+        allPost: async () => await Post.find(),//allPost
         myprofile: async (_,args,{userId}) =>{
             if (!userId) throw new Error("you must be login")
             return await User.findOne({_id: userId})

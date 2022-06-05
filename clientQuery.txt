@@ -97,8 +97,17 @@ query getUserByQueryVariable ( $userId : ID!) {
 
 ========================================
 
-query getPostByQueryVariable ( $postId : ID ){
+query getPostByUserQueryVariable ( $postId : ID! ){
   post( by : $postId ){
+    _id
+    by
+    post
+  }
+}
+
+query getPostByQueryVariable ( $postId : ID! ){
+  postById( _id : $postId ){
+    _id
     by
     post
   }
@@ -226,7 +235,7 @@ mutation updateuser ($Update : UpdateUser!) {
 
 mutation updatepost ( $Update : UpdatePost! ){
   updatePost ( UpdatePost : $Update ){
-		_id
+    _id
     post
   }
 }

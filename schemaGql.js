@@ -6,6 +6,7 @@ type Query {
     users : [User]
     user (_id: ID!) : User
     post (by: ID!) : [Post]
+    postById (_id: ID!) : Post
     posts : [postWithName]
     allPost : [Post]
     myprofile : User
